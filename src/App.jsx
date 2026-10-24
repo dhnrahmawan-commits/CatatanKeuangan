@@ -1,6 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  Home, Calculator, Wallet, PiggyBank, User, Camera, 
+  FileText, Printer, X, Plus, ArrowUp, ArrowDown, ChevronRight 
+} from 'lucide-react';
 
-// --- Bantuan Format Rupiah ---
 const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -9,63 +12,34 @@ const formatRupiah = (angka) => {
   }).format(angka || 0);
 };
 
-// --- Komponen Ikon (SVG) ---
-const IconHome = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-const IconCalculator = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16.01" y1="14" y2="14"/><line x1="16" x2="16.01" y1="18" y2="18"/><line x1="16" x2="16.01" y1="10" y2="10"/><line x1="12" x2="12.01" y1="14" y2="14"/><line x1="12" x2="12.01" y1="18" y2="18"/><line x1="12" x2="12.01" y1="10" y2="10"/><line x1="8" x2="8.01" y1="14" y2="14"/><line x1="8" x2="8.01" y1="18" y2="18"/><line x1="8" x2="8.01" y1="10" y2="10"/></svg>;
-const IconWallet = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>;
-const IconPiggyBank = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.5-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>;
-const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>;
-const IconArrowUp = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>;
-const IconArrowDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>;
-const IconPrint = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>;
-const IconClose = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
-const IconFile = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
-
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [notification, setNotification] = useState(null);
 
-  // State Profil (Local Storage)
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem('keuanganku_profile');
     return saved ? JSON.parse(saved) : { name: 'Pengguna', photo: '' };
   });
-  const [showSettings, setShowSettings] = useState(false);
-  const [editName, setEditName] = useState('');
-  const [editPhoto, setEditPhoto] = useState('');
 
-  // State Data (Local Storage)
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('keuanganku_tx');
     return saved ? JSON.parse(saved) : [];
   });
+
   const [savings, setSavings] = useState(() => {
     const saved = localStorage.getItem('keuanganku_savings');
     return saved ? JSON.parse(saved) : [];
   });
-  const [notification, setNotification] = useState(null);
 
   useEffect(() => { localStorage.setItem('keuanganku_profile', JSON.stringify(userProfile)); }, [userProfile]);
   useEffect(() => { localStorage.setItem('keuanganku_tx', JSON.stringify(transactions)); }, [transactions]);
   useEffect(() => { localStorage.setItem('keuanganku_savings', JSON.stringify(savings)); }, [savings]);
 
-  const showNotification = (msg) => {
-    setNotification(msg);
+  const showNotification = (msg, type = 'default') => {
+    setNotification({ msg, type });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const openSettings = () => {
-    setEditName(userProfile.name || '');
-    setEditPhoto(userProfile.photo || '');
-    setShowSettings(true);
-  };
-
-  const saveProfile = () => {
-    setUserProfile({ name: editName, photo: editPhoto });
-    setShowSettings(false);
-    showNotification("Profil berhasil diperbarui");
-  };
-
-  // Perhitungan Saldo
   const { totalBalance, totalIn, totalOut } = useMemo(() => {
     let balance = 0, inAmount = 0, outAmount = 0;
     (transactions || []).forEach(t => {
@@ -75,90 +49,138 @@ export default function App() {
     return { totalBalance: balance, totalIn: inAmount, totalOut: outAmount };
   }, [transactions]);
 
-  // --- Views ---
-  const HomeView = () => (
-    <div className="p-4 space-y-6 animate-fade-in pb-24">
-      <div className="flex justify-between items-center">
-        <div>
-          <p className="text-gray-500 text-sm">Selamat Datang,</p>
-          <h1 className="text-xl font-bold text-gray-800">{userProfile.name || 'Pengguna'}</h1>
-        </div>
-        <button onClick={openSettings} className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform cursor-pointer shrink-0">
-          {userProfile.photo ? <img src={userProfile.photo} alt="profile" className="w-full h-full object-cover" /> : (userProfile.name ? userProfile.name.charAt(0).toUpperCase() : 'P')}
-        </button>
-      </div>
+  // --- VIEWS ---
+  const HomeView = () => {
+    const [showProfileModal, setShowProfileModal] = useState(false);
+    const [editName, setEditName] = useState(userProfile.name);
+    const [editPhoto, setEditPhoto] = useState(userProfile.photo);
 
-      <div className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-20"><IconWallet /></div>
-        <p className="text-indigo-100 text-sm mb-1">Total Saldo Saat Ini</p>
-        <h2 className="text-3xl font-bold mb-4">{formatRupiah(totalBalance)}</h2>
-        <div className="flex justify-between border-t border-indigo-400/30 pt-4">
+    const handlePhotoUpload = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => setEditPhoto(reader.result);
+        reader.readAsDataURL(file);
+      }
+    };
+
+    const saveProfile = () => {
+      setUserProfile({ name: editName, photo: editPhoto });
+      setShowProfileModal(false);
+      showNotification('Profil berhasil disimpan!', 'default');
+    };
+
+    return (
+      <div style={{ padding: '20px', paddingBottom: '120px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
-            <p className="text-xs text-indigo-100 flex items-center gap-1"><IconArrowUp/> Pemasukan</p>
-            <p className="font-semibold">{formatRupiah(totalIn)}</p>
+            <p style={{ color: '#64748b', fontSize: '13px', margin: 0, fontWeight: 500 }}>Selamat Datang,</p>
+            <h1 style={{ fontSize: '22px', fontWeight: 'bold', color: '#1e293b', margin: '2px 0 0 0' }}>{userProfile.name || 'Pengguna'}</h1>
           </div>
-          <div>
-            <p className="text-xs text-indigo-100 flex items-center gap-1"><IconArrowDown/> Pengeluaran</p>
-            <p className="font-semibold">{formatRupiah(totalOut)}</p>
+          <button onClick={() => setShowProfileModal(true)} style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#dbeafe', border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+            {userProfile.photo ? <img src={userProfile.photo} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={24} />}
+          </button>
+        </div>
+
+        <div style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', borderRadius: '24px', padding: '24px', color: 'white', boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.4)', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
+          <p style={{ color: '#bfdbfe', fontSize: '13px', margin: '0 0 4px 0', fontWeight: 500 }}>Total Saldo Saat Ini</p>
+          <h2 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 20px 0', letterSpacing: '-0.5px' }}>{formatRupiah(totalBalance)}</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '16px' }}>
+            <div>
+              <p style={{ fontSize: '11px', color: '#bfdbfe', display: 'flex', alignItems: 'center', gap: '4px', margin: '0 0 4px 0' }}><ArrowUp size={14}/> Pemasukan</p>
+              <p style={{ fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatRupiah(totalIn)}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: '11px', color: '#bfdbfe', display: 'flex', alignItems: 'center', gap: '4px', margin: '0 0 4px 0' }}><ArrowDown size={14}/> Pengeluaran</p>
+              <p style={{ fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatRupiah(totalOut)}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {savings.length > 0 && (
-         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-           <div className="flex justify-between items-center mb-3">
-             <h3 className="font-bold text-gray-800 text-sm">Ringkasan Tabungan</h3>
-             <button onClick={() => setActiveTab('savings')} className="text-xs text-indigo-600 font-medium">Lihat</button>
-           </div>
-           <div className="space-y-3">
-              {savings.slice(0, 2).map(s => {
-                const progress = Math.min((s.current / s.target) * 100, 100).toFixed(1);
-                return (
-                  <div key={s.id}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="font-medium">{s.name}</span>
-                      <span className="text-indigo-600 font-bold">{formatRupiah(s.current)} / {formatRupiah(s.target)} ({progress}%)</span>
+        {(savings || []).length > 0 && (
+           <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)', border: '1px solid #f1f5f9', marginBottom: '20px' }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+               <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>Target Tabungan</h3>
+               <button onClick={() => setActiveTab('savings')} style={{ fontSize: '12px', fontWeight: 'bold', color: '#2563eb', backgroundColor: '#eff6ff', border: 'none', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer' }}>Lihat Semua</button>
+             </div>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {savings.slice(0, 2).map(s => {
+                  const progress = Math.min((s.current / s.target) * 100, 100).toFixed(1);
+                  return (
+                    <div key={s.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        <span style={{ fontWeight: 'bold', color: '#334155' }}>{s.name}</span>
+                        <span style={{ fontWeight: 'bold', color: '#64748b' }}>{formatRupiah(s.current)} <span style={{ color: '#94a3b8', fontWeight: 'normal' }}>/ {formatRupiah(s.target)}</span></span>
+                      </div>
+                      <div style={{ width: '100%', backgroundColor: '#f1f5f9', borderRadius: '99px', height: '8px', overflow: 'hidden' }}>
+                        <div style={{ backgroundColor: '#2563eb', height: '100%', width: `${progress}%`, borderRadius: '99px' }}></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-1.5">
-                      <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                  )
+                })}
+             </div>
+           </div>
+        )}
+
+        <div>
+          <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#1e293b', marginBottom: '14px' }}>Transaksi Terakhir</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {transactions.length === 0 ? (
+               <p style={{ color: '#94a3b8', textAlign: 'center', fontSize: '13px', backgroundColor: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9', margin: 0 }}>Belum ada transaksi.</p>
+            ) : (
+              transactions.slice().reverse().slice(0, 3).map(t => (
+                <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: 'white', borderRadius: '18px', border: '1px solid #f8fafc', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ padding: '10px', borderRadius: '14px', backgroundColor: t.type === 'in' ? '#dcfce7' : '#fee2e2', color: t.type === 'in' ? '#16a34a' : '#dc2626', display: 'flex' }}>
+                      {t.type === 'in' ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 'bold', color: '#1e293b', fontSize: '14px', margin: '0 0 2px 0' }}>{t.note}</p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, fontWeight: 500 }}>{new Date(t.date).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                )
-              })}
-           </div>
-         </div>
-      )}
+                  <p style={{ fontWeight: 'bold', fontSize: '14px', margin: 0, color: t.type === 'in' ? '#16a34a' : '#dc2626' }}>
+                    {t.type === 'in' ? '+' : '-'}{formatRupiah(t.amount)}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
 
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="font-bold text-gray-800">Transaksi Terakhir</h3>
-          <button onClick={() => setActiveTab('tracker')} className="text-sm text-indigo-600 font-medium">Semua</button>
-        </div>
-        <div className="space-y-3">
-          {transactions.slice().reverse().slice(0, 3).map(t => (
-            <div key={t.id} className="flex justify-between items-center p-3 bg-white rounded-xl shadow-sm border border-gray-50">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${t.type === 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                  {t.type === 'in' ? <IconArrowUp /> : <IconArrowDown />}
+        {showProfileModal && (
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setShowProfileModal(false)}>
+            <div style={{ backgroundColor: 'white', width: '100%', maxWidth: '340px', borderRadius: '28px', padding: '24px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} onClick={e => e.stopPropagation()}>
+              <button onClick={() => setShowProfileModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', padding: '8px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '50%', cursor: 'pointer', color: '#64748b' }}><X size={18}/></button>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', marginTop: 0, marginBottom: '20px' }}>Edit Profil</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#f1f5f9', border: '3px solid white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                  {editPhoto ? <img src={editPhoto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={36} color="#94a3b8"/>}
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-sm">{t.note}</p>
-                  <p className="text-xs text-gray-400">{new Date(t.date).toLocaleDateString('id-ID')}</p>
-                </div>
+                <label style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '8px 16px', borderRadius: '14px', fontSize: '13px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <Camera size={16}/> Ubah Foto Galeri
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoUpload} />
+                </label>
               </div>
-              <p className={`font-bold text-sm ${t.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
-                {t.type === 'in' ? '+' : '-'}{formatRupiah(t.amount)}
-              </p>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '8px' }}>Nama Panggilan</label>
+                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} placeholder="Masukkan nama..." />
+              </div>
+              
+              <button onClick={saveProfile} style={{ width: '100%', padding: '14px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}>
+                Simpan Perubahan
+              </button>
             </div>
-          ))}
-          {transactions.length === 0 && <p className="text-gray-400 text-center text-sm bg-white p-4 rounded-xl">Belum ada transaksi.</p>}
-        </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const SalaryView = () => {
-    const [salaryTab, setSalaryTab] = useState('input');
+    const [tab, setTab] = useState('input');
     const [tipeGaji, setTipeGaji] = useState('Harian');
     const [gajiPokok, setGajiPokok] = useState('');
     const [uangTransport, setUangTransport] = useState('');
@@ -175,110 +197,103 @@ export default function App() {
 
     const simpanGaji = () => {
       if (gajiBersih <= 0) return;
-      
       const newTx = {
-        id: Date.now(),
-        type: 'in',
-        amount: gajiBersih,
-        note: `Gaji ${tipeGaji}`,
-        date: new Date().toISOString(),
-        isSalary: true,
+        id: Date.now(), type: 'in', amount: gajiBersih, note: `Gaji ${tipeGaji}`,
+        date: new Date().toISOString(), isSalary: true,
         details: { type: tipeGaji, base: numGaji, transport: numTransport, commission: numKomisi, items: numJumlah, totalCommission: totalKomisi }
       };
-
       setTransactions([...transactions, newTx]);
-      showNotification('Gaji berhasil disimpan!');
+      showNotification('Gaji berhasil disimpan!', 'salary');
       setGajiPokok(''); setUangTransport(''); setKomisiPerProduk(''); setJumlahProduk('');
-      setSalaryTab('history');
+      setTab('history');
     };
 
     const salaryHistory = transactions.filter(t => t.isSalary).reverse();
 
     return (
-      <div className="p-4 space-y-6 animate-fade-in pb-24 print-container">
-        <div className="flex justify-between items-center hide-on-print">
-          <h2 className="text-xl font-bold text-gray-800">Kalkulator Gaji</h2>
-          <div className="flex bg-gray-200 p-1 rounded-lg">
-            <button onClick={() => setSalaryTab('input')} className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${salaryTab === 'input' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Input</button>
-            <button onClick={() => setSalaryTab('history')} className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${salaryTab === 'history' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Riwayat</button>
+      <div style={{ padding: '20px', paddingBottom: '120px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>Kalkulator Gaji</h2>
+          <div style={{ display: 'flex', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '14px' }}>
+            <button onClick={() => setTab('input')} style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: tab === 'input' ? 'white' : 'transparent', color: tab === 'input' ? '#2563eb' : '#64748b' }}>Form</button>
+            <button onClick={() => setTab('history')} style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: tab === 'history' ? 'white' : 'transparent', color: tab === 'history' ? '#2563eb' : '#64748b' }}>Riwayat</button>
           </div>
         </div>
 
-        {salaryTab === 'input' ? (
-          <div className="space-y-6 hide-on-print">
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-              <div className="flex gap-2 bg-gray-100 p-1 rounded-xl mb-2">
-                <button type="button" onClick={() => setTipeGaji('Harian')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${tipeGaji === 'Harian' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Harian</button>
-                <button type="button" onClick={() => setTipeGaji('Bulanan')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${tipeGaji === 'Bulanan' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Bulanan</button>
+        {tab === 'input' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '24px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', backgroundColor: '#f8fafc', padding: '4px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                <button type="button" onClick={() => setTipeGaji('Harian')} style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', border: 'none', cursor: 'pointer', backgroundColor: tipeGaji === 'Harian' ? 'white' : 'transparent', color: tipeGaji === 'Harian' ? '#2563eb' : '#64748b' }}>Harian</button>
+                <button type="button" onClick={() => setTipeGaji('Bulanan')} style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', border: 'none', cursor: 'pointer', backgroundColor: tipeGaji === 'Bulanan' ? 'white' : 'transparent', color: tipeGaji === 'Bulanan' ? '#2563eb' : '#64748b' }}>Bulanan</button>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gaji Pokok ({tipeGaji})</label>
-                <input type="number" inputMode="numeric" value={gajiPokok} onChange={(e) => setGajiPokok(e.target.value)} placeholder="Rp 0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Gaji Pokok ({tipeGaji})</label>
+                <input type="number" value={gajiPokok} onChange={(e) => setGajiPokok(e.target.value)} placeholder="Rp 0" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Uang Transport</label>
-                <input type="number" inputMode="numeric" value={uangTransport} onChange={(e) => setUangTransport(e.target.value)} placeholder="Rp 0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Uang Transport</label>
+                <input type="number" value={uangTransport} onChange={(e) => setUangTransport(e.target.value)} placeholder="Rp 0" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
               </div>
-              
-              <div className="border-t border-gray-100 pt-4 mt-2">
-                <p className="font-semibold text-gray-800 mb-3 text-sm">Target & Komisi</p>
-                <div className="grid grid-cols-2 gap-3">
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                <p style={{ fontWeight: 'bold', color: '#1e293b', fontSize: '13px', margin: '0 0 12px 0' }}>Target & Komisi (Opsional)</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Komisi / Produk</label>
-                    <input type="number" inputMode="numeric" value={komisiPerProduk} onChange={(e) => setKomisiPerProduk(e.target.value)} placeholder="Rp 0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm" />
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', color: '#64748b', marginBottom: '4px' }}>Komisi / Produk</label>
+                    <input type="number" value={komisiPerProduk} onChange={(e) => setKomisiPerProduk(e.target.value)} placeholder="Rp 0" style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Jml Terjual</label>
-                    <input type="number" inputMode="numeric" value={jumlahProduk} onChange={(e) => setJumlahProduk(e.target.value)} placeholder="0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm" />
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', color: '#64748b', marginBottom: '4px' }}>Jml Terjual</label>
+                    <input type="number" value={jumlahProduk} onChange={(e) => setJumlahProduk(e.target.value)} placeholder="0" style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-5 rounded-2xl border border-indigo-100 text-center shadow-sm">
-              <p className="text-indigo-800 text-sm font-medium mb-1">Total Diterima</p>
-              <h3 className="text-3xl font-bold text-indigo-700">{formatRupiah(gajiBersih)}</h3>
+            <div style={{ backgroundColor: '#eff6ff', padding: '20px', borderRadius: '24px', border: '1px solid #dbeafe', textAlign: 'center' }}>
+              <p style={{ color: '#1e40af', fontSize: '13px', fontWeight: 'bold', margin: '0 0 4px 0' }}>Total Diterima</p>
+              <h3 style={{ fontSize: '28px', fontWeight: '900', color: '#2563eb', margin: 0 }}>{formatRupiah(gajiBersih)}</h3>
             </div>
 
-            <button onClick={simpanGaji} disabled={gajiBersih <= 0} className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-all ${gajiBersih > 0 ? 'bg-indigo-600 text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
+            <button onClick={simpanGaji} disabled={gajiBersih <= 0} style={{ width: '100%', fontWeight: 'bold', padding: '16px', borderRadius: '16px', border: 'none', cursor: gajiBersih > 0 ? 'pointer' : 'not-allowed', backgroundColor: gajiBersih > 0 ? '#2563eb' : '#e2e8f0', color: gajiBersih > 0 ? 'white' : '#94a3b8' }}>
               Simpan ke Keuangan
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center hide-on-print">
-               <p className="text-sm text-gray-500">Total Riwayat: {salaryHistory.length}</p>
-               <button onClick={() => window.print()} className="flex items-center gap-2 bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium">
-                 <IconPrint /> Export PDF
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <p style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', margin: 0 }}>{salaryHistory.length} Riwayat Tersimpan</p>
+               <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#1e293b', color: 'white', padding: '8px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
+                 <Printer size={16} /> Export
                </button>
             </div>
-            <h2 className="hidden print-only text-2xl font-bold text-center mb-6">Laporan Riwayat Gaji</h2>
+
             {salaryHistory.length === 0 ? (
-              <div className="text-center bg-white p-8 rounded-2xl border border-gray-100 hide-on-print">
-                <p className="text-gray-400">Belum ada riwayat gaji.</p>
+              <div style={{ textAlign: 'center', backgroundColor: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Belum ada riwayat gaji.</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {salaryHistory.map(t => (
-                  <div key={t.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 print-border">
-                     <div className="flex justify-between border-b border-gray-100 pb-2 mb-2">
-                        <div>
-                          <span className="font-bold text-gray-700">{new Date(t.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                          <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded ml-2 font-bold uppercase">{t.details?.type}</span>
+              salaryHistory.map(t => (
+                <div key={t.id} style={{ backgroundColor: 'white', padding: '18px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '12px' }}>
+                      <div>
+                        <span style={{ display: 'block', fontWeight: 'bold', color: '#1e293b', fontSize: '13px' }}>{new Date(t.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 8px', borderRadius: '6px', marginTop: '4px', display: 'inline-block' }}>{t.details?.type || 'Harian'}</span>
+                      </div>
+                      <span style={{ fontWeight: 'bold', color: '#16a34a', fontSize: '16px' }}>{formatRupiah(t.amount)}</span>
+                   </div>
+                   <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '6px', color: '#475569', fontWeight: 500 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Gaji Pokok:</span> <span style={{ color: '#1e293b' }}>{formatRupiah(t.details?.base || 0)}</span></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Uang Transport:</span> <span style={{ color: '#1e293b' }}>{formatRupiah(t.details?.transport || 0)}</span></div>
+                      {(t.details?.totalCommission || 0) > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#1e40af', backgroundColor: '#eff6ff', padding: '8px 10px', borderRadius: '8px', marginTop: '4px' }}>
+                          <span>Komisi ({t.details?.items}x):</span> 
+                          <span style={{ fontWeight: 'bold' }}>{formatRupiah(t.details?.totalCommission || 0)}</span>
                         </div>
-                        <span className="font-bold text-green-600">{formatRupiah(t.amount)}</span>
-                     </div>
-                     <div className="text-sm space-y-1 text-gray-600">
-                        <div className="flex justify-between"><span>Gaji Pokok:</span> <span className="font-medium">{formatRupiah(t.details?.base || 0)}</span></div>
-                        <div className="flex justify-between"><span>Uang Transport:</span> <span className="font-medium">{formatRupiah(t.details?.transport || 0)}</span></div>
-                        <div className="flex justify-between text-indigo-700">
-                          <span>Komisi ({t.details?.items || 0} x {formatRupiah(t.details?.commission || 0)}):</span> 
-                          <span className="font-medium">{formatRupiah(t.details?.totalCommission || 0)}</span>
-                        </div>
-                     </div>
-                  </div>
-                ))}
-              </div>
+                      )}
+                   </div>
+                </div>
+              ))
             )}
           </div>
         )}
@@ -286,20 +301,20 @@ export default function App() {
     );
   };
 
-  const TrackerView = () => {
-    const [trackerTab, setTrackerTab] = useState('list');
+  const FinanceView = () => {
+    const [tab, setTab] = useState('list');
     const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({ type: 'out', amount: '', note: '' });
     const [selectedTx, setSelectedTx] = useState(null);
+    const [form, setForm] = useState({ type: 'out', amount: '', note: '' });
 
     const handleAdd = (e) => {
       e.preventDefault();
       if (!form.amount || !form.note) return;
       const newTx = { id: Date.now(), type: form.type, amount: parseFloat(form.amount), note: form.note, date: new Date().toISOString() };
       setTransactions([...transactions, newTx]);
-      setShowForm(false);
+      setShowForm(false); 
       setForm({ type: 'out', amount: '', note: '' });
-      showNotification('Transaksi berhasil dicatat');
+      showNotification('Transaksi disimpan!', form.type);
     };
 
     const monthlyData = useMemo(() => {
@@ -308,122 +323,144 @@ export default function App() {
         const d = new Date(t.date);
         const monthYear = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-        if (!data[monthYear]) data[monthYear] = { name: monthName, in: 0, out: 0 };
+        if (!data[monthYear]) data[monthYear] = { name: monthName, in: 0, out: 0, sortKey: monthYear };
         if (t.type === 'in') data[monthYear].in += t.amount;
         else data[monthYear].out += t.amount;
       });
-      return Object.values(data).sort((a, b) => b.name.localeCompare(a.name)); 
+      return Object.values(data).sort((a, b) => b.sortKey.localeCompare(a.sortKey)); 
     }, [transactions]);
 
     return (
-      <div className="p-4 space-y-4 animate-fade-in relative min-h-screen pb-24">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xl font-bold text-gray-800">Keuangan</h2>
-          <div className="flex bg-gray-200 p-1 rounded-lg">
-            <button onClick={() => setTrackerTab('list')} className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${trackerTab === 'list' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Harian</button>
-            <button onClick={() => setTrackerTab('report')} className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${trackerTab === 'report' ? 'bg-white text-indigo-600 shadow' : 'text-gray-500'}`}>Laporan</button>
+      <div style={{ padding: '20px', paddingBottom: '120px', position: 'relative', minHeight: '80vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>Catatan Keuangan</h2>
+          <div style={{ display: 'flex', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '14px' }}>
+            <button onClick={() => setTab('list')} style={{ padding: '8px 14px', fontSize: '13px', borderRadius: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: tab === 'list' ? 'white' : 'transparent', color: tab === 'list' ? '#2563eb' : '#64748b' }}>Transaksi</button>
+            <button onClick={() => setTab('report')} style={{ padding: '8px 14px', fontSize: '13px', borderRadius: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: tab === 'report' ? 'white' : 'transparent', color: tab === 'report' ? '#2563eb' : '#64748b' }}>Laporan</button>
           </div>
         </div>
 
-        {trackerTab === 'list' && (
+        {tab === 'list' && (
           <>
-            <div className="space-y-3">
-              {transactions.slice().reverse().map(t => (
-                <div key={t.id} onClick={() => setSelectedTx(t)} className="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer active:scale-[0.98]">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl ${t.type === 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                      {t.type === 'in' ? <IconArrowUp /> : <IconArrowDown />}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {transactions.length === 0 ? (
+                 <div style={{ textAlign: 'center', backgroundColor: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #f1f5f9' }}><p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Belum ada transaksi</p></div>
+              ) : (
+                transactions.slice().reverse().map(t => (
+                  <div key={t.id} onClick={() => setSelectedTx(t)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: 'white', borderRadius: '18px', border: '1px solid #f8fafc', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ padding: '10px', borderRadius: '14px', backgroundColor: t.type === 'in' ? '#dcfce7' : '#fee2e2', color: t.type === 'in' ? '#16a34a' : '#dc2626', display: 'flex' }}>
+                        {t.type === 'in' ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 'bold', color: '#1e293b', fontSize: '14px', margin: '0 0 2px 0' }}>{t.note}</p>
+                        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, fontWeight: 500 }}>{new Date(t.date).toLocaleDateString('id-ID')}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-gray-800">{t.note}</p>
-                      <p className="text-xs text-gray-400 font-medium">{new Date(t.date).toLocaleDateString('id-ID')}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '14px', margin: 0, color: t.type === 'in' ? '#16a34a' : '#dc2626' }}>
+                        {t.type === 'in' ? '+' : '-'}{formatRupiah(t.amount)}
+                      </p>
+                      <ChevronRight size={16} color="#cbd5e1" />
                     </div>
                   </div>
-                  <p className={`font-bold ${t.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
-                    {t.type === 'in' ? '+' : '-'}{formatRupiah(t.amount)}
-                  </p>
-                </div>
-              ))}
-              {transactions.length === 0 && <div className="text-center bg-white p-8 rounded-2xl border border-gray-100"><p className="text-gray-400">Belum ada transaksi</p></div>}
+                ))
+              )}
             </div>
 
             {!showForm && (
-              <button onClick={() => setShowForm(true)} className="fixed bottom-24 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 active:scale-90 z-30 transition-transform">
-                <IconPlus />
+              <button onClick={() => setShowForm(true)} style={{ position: 'fixed', bottom: '90px', right: '20px', width: '56px', height: '56px', backgroundColor: '#2563eb', color: 'white', borderRadius: '50%', border: 'none', boxShadow: '0 10px 20px rgba(37,99,235,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 50 }}>
+                <Plus size={28} />
               </button>
             )}
           </>
         )}
 
-        {trackerTab === 'report' && (
-          <div className="space-y-6">
-            {monthlyData.map((month, idx) => (
-              <div key={idx} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-indigo-50 p-4 border-b border-indigo-100">
-                  <h3 className="font-bold text-indigo-900 flex items-center gap-2"><IconFile /> Laporan {month.name}</h3>
+        {tab === 'report' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {monthlyData.length === 0 ? (
+               <div style={{ textAlign: 'center', backgroundColor: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #f1f5f9' }}><p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Belum ada data laporan.</p></div>
+            ) : (
+              monthlyData.map((month, idx) => (
+                <div key={idx} style={{ backgroundColor: 'white', borderRadius: '24px', border: '1px solid #f1f5f9', overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#eff6ff', padding: '14px 18px', borderBottom: '1px solid #dbeafe', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileText size={16} color="#1d4ed8" />
+                    <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#1e40af', margin: 0 }}>{month.name}</h3>
+                  </div>
+                  <div style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                      <span style={{ color: '#64748b', fontWeight: 500 }}>Pemasukan</span>
+                      <span style={{ fontWeight: 'bold', color: '#16a34a' }}>{formatRupiah(month.in)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                      <span style={{ color: '#64748b', fontWeight: 500 }}>Pengeluaran</span>
+                      <span style={{ fontWeight: 'bold', color: '#dc2626' }}>{formatRupiah(month.out)}</span>
+                    </div>
+                    <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 'bold', color: '#1e293b', fontSize: '13px' }}>Saldo Bersih</span>
+                      <span style={{ fontSize: '18px', fontWeight: '900', color: month.in - month.out >= 0 ? '#2563eb' : '#dc2626' }}>
+                        {formatRupiah(month.in - month.out)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-5 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 text-sm font-medium">Total Pemasukan</span>
-                    <span className="font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">{formatRupiah(month.in)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 text-sm font-medium">Total Pengeluaran</span>
-                    <span className="font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md">{formatRupiah(month.out)}</span>
-                  </div>
-                  <div className="border-t border-gray-100 pt-4 mt-2 flex justify-between items-center">
-                    <span className="font-bold text-gray-800">Sisa Saldo</span>
-                    <span className={`text-xl font-bold ${month.in - month.out >= 0 ? 'text-indigo-600' : 'text-red-600'}`}>
-                      {formatRupiah(month.in - month.out)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {monthlyData.length === 0 && <div className="text-center bg-white p-8 rounded-2xl border border-gray-100"><p className="text-gray-400">Belum ada data laporan</p></div>}
+              ))
+            )}
           </div>
         )}
 
         {showForm && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowForm(false)}>
-            <form onSubmit={handleAdd} className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 mb-16" onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-center border-b pb-3">
-                <h3 className="font-bold text-lg text-gray-800">Catat Transaksi</h3>
-                <button type="button" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-700"><IconClose /></button>
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setShowForm(false)}>
+            <form onSubmit={handleAdd} style={{ backgroundColor: 'white', width: '100%', maxWidth: '340px', borderRadius: '28px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} onClick={e => e.stopPropagation()}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>Catat Transaksi</h3>
+                <button type="button" onClick={() => setShowForm(false)} style={{ padding: '6px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '50%', cursor: 'pointer', color: '#64748b' }}><X size={18}/></button>
               </div>
-              <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
-                <button type="button" onClick={() => setForm({...form, type: 'in'})} className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${form.type === 'in' ? 'bg-green-500 text-white shadow' : 'text-gray-500'}`}>Pemasukan</button>
-                <button type="button" onClick={() => setForm({...form, type: 'out'})} className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${form.type === 'out' ? 'bg-red-500 text-white shadow' : 'text-gray-500'}`}>Pengeluaran</button>
+              
+              <div style={{ display: 'flex', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '14px' }}>
+                <button type="button" onClick={() => setForm({...form, type: 'in'})} style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', border: 'none', cursor: 'pointer', backgroundColor: form.type === 'in' ? '#16a34a' : 'transparent', color: form.type === 'in' ? 'white' : '#64748b' }}>Pemasukan</button>
+                <button type="button" onClick={() => setForm({...form, type: 'out'})} style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', border: 'none', cursor: 'pointer', backgroundColor: form.type === 'out' ? '#dc2626' : 'transparent', color: form.type === 'out' ? 'white' : '#64748b' }}>Pengeluaran</button>
               </div>
+              
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Nominal</label>
-                <input type="number" inputMode="numeric" required value={form.amount} onChange={(e) => setForm({...form, amount: e.target.value})} placeholder="Rp 0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-lg font-bold" />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Nominal (Rp)</label>
+                <input type="number" required value={form.amount} onChange={(e) => setForm({...form, amount: e.target.value})} placeholder="0" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '16px', fontWeight: 'bold', outline: 'none', boxSizing: 'border-box' }} />
               </div>
+              
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Keterangan</label>
-                <input type="text" inputMode="text" required value={form.note} onChange={(e) => setForm({...form, note: e.target.value})} placeholder="Cth: Makan siang" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Keterangan</label>
+                <input type="text" required value={form.note} onChange={(e) => setForm({...form, note: e.target.value})} placeholder="Cth: Makan siang" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
               </div>
-              <button type="submit" className={`w-full py-3.5 text-white font-bold rounded-xl shadow-md ${form.type === 'in' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>Simpan Transaksi</button>
+              
+              <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: form.type === 'in' ? '#16a34a' : '#dc2626', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginTop: '6px' }}>Simpan Transaksi</button>
             </form>
           </div>
         )}
 
         {selectedTx && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedTx(null)}>
-            <div className="bg-white w-full max-w-sm rounded-3xl p-6 relative shadow-2xl mb-16" onClick={e => e.stopPropagation()}>
-              <button onClick={() => setSelectedTx(null)} className="absolute top-4 right-4 text-gray-400 bg-gray-100 rounded-full p-2"><IconClose /></button>
-              <div className="text-center mb-6 pt-2">
-                <div className={`mx-auto w-16 h-16 flex items-center justify-center rounded-2xl mb-4 ${selectedTx.type === 'in' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                  {selectedTx.type === 'in' ? <IconArrowUp /> : <IconArrowDown />}
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setSelectedTx(null)}>
+            <div style={{ backgroundColor: 'white', width: '100%', maxWidth: '340px', borderRadius: '28px', padding: '24px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} onClick={e => e.stopPropagation()}>
+              <button onClick={() => setSelectedTx(null)} style={{ position: 'absolute', top: '16px', right: '16px', padding: '8px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '50%', cursor: 'pointer', color: '#64748b' }}><X size={18}/></button>
+              
+              <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '10px' }}>
+                <div style={{ margin: '0 auto 12px auto', width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '18px', backgroundColor: selectedTx.type === 'in' ? '#dcfce7' : '#fee2e2', color: selectedTx.type === 'in' ? '#16a34a' : '#dc2626' }}>
+                  {selectedTx.type === 'in' ? <ArrowUp size={28} /> : <ArrowDown size={28} />}
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900">{formatRupiah(selectedTx.amount)}</h3>
-                <p className="text-gray-500 mt-1 font-medium">{selectedTx.note}</p>
+                <h3 style={{ fontSize: '26px', fontWeight: '900', color: '#0f172a', margin: '0 0 4px 0' }}>{formatRupiah(selectedTx.amount)}</h3>
+                <p style={{ color: '#64748b', fontSize: '14px', margin: 0, fontWeight: 500 }}>{selectedTx.note}</p>
               </div>
-              <div className="space-y-3 text-sm text-gray-600 mb-6 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <div className="flex justify-between border-b pb-2"><span>Waktu</span> <span className="font-bold">{new Date(selectedTx.date).toLocaleString('id-ID')}</span></div>
-                <div className="flex justify-between pb-1"><span>Jenis</span> <span className={`font-bold ${selectedTx.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>{selectedTx.type === 'in' ? 'Pemasukan' : 'Pengeluaran'}</span></div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#475569', marginBottom: '20px', backgroundColor: '#f8fafc', padding: '16px', borderRadius: '18px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
+                  <span style={{ color: '#94a3b8' }}>Tanggal</span> 
+                  <span style={{ fontWeight: 'bold', color: '#1e293b' }}>{new Date(selectedTx.date).toLocaleString('id-ID')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px' }}>
+                  <span style={{ color: '#94a3b8' }}>Jenis</span> 
+                  <span style={{ fontWeight: 'bold', color: selectedTx.type === 'in' ? '#16a34a' : '#dc2626' }}>{selectedTx.type === 'in' ? 'Pemasukan' : 'Pengeluaran'}</span>
+                </div>
               </div>
-              <button onClick={() => setSelectedTx(null)} className="w-full py-3.5 bg-gray-900 text-white font-bold rounded-xl shadow-md">Tutup</button>
+              <button onClick={() => setSelectedTx(null)} style={{ width: '100%', padding: '14px', backgroundColor: '#1e293b', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>Tutup</button>
             </div>
           </div>
         )}
@@ -443,7 +480,7 @@ export default function App() {
       const newSaving = { id: Date.now(), name: form.name, target: parseFloat(form.target), current: 0, history: [] };
       setSavings([...savings, newSaving]);
       setShowForm(false); setForm({ name: '', target: '' });
-      showNotification('Target tabungan dibuat!');
+      showNotification('Target tabungan dibuat!', 'default');
     };
 
     const handleAddAmount = (e) => {
@@ -451,74 +488,86 @@ export default function App() {
       const amountNum = parseFloat(addAmount) || 0;
       if (amountNum <= 0) return;
 
-      const record = { amount: amountNum, date: new Date().toISOString() };
+      const record = { id: Date.now(), amount: amountNum, date: new Date().toISOString() };
       setSavings(savings.map(s => s.id === addModal ? { ...s, current: s.current + amountNum, history: [record, ...(s.history || [])] } : s));
       setAddModal(null); setAddAmount('');
-      showNotification('Setoran tabungan berhasil!');
+      showNotification('Tabungan berhasil disetor!', 'in');
     };
 
     return (
-      <div className="p-4 space-y-6 animate-fade-in pb-24">
-        <h2 className="text-xl font-bold text-gray-800">Target Tabungan</h2>
+      <div style={{ padding: '20px', paddingBottom: '120px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', marginTop: 0, marginBottom: '16px' }}>Target Tabungan</h2>
 
         {showForm ? (
-           <form onSubmit={handleNewSavings} className="bg-white p-5 rounded-3xl shadow-md border border-gray-100 space-y-4">
-             <h3 className="font-bold border-b pb-2 text-lg">Buat Target Baru</h3>
+           <form onSubmit={handleNewSavings} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '24px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+             <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1e293b', margin: '0 0 4px 0', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>Buat Target Baru</h3>
              <div>
-               <label className="block text-sm font-medium text-gray-600 mb-1">Nama Impian</label>
-               <input type="text" inputMode="text" required value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Cth: Beli Motor" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
+               <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Nama Impian</label>
+               <input type="text" required value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Cth: Beli Motor" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
              </div>
              <div>
-               <label className="block text-sm font-medium text-gray-600 mb-1">Target Nominal (Rp)</label>
-               <input type="number" inputMode="numeric" required value={form.target} onChange={(e) => setForm({...form, target: e.target.value})} placeholder="Rp 0" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
+               <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>Target Nominal (Rp)</label>
+               <input type="number" required value={form.target} onChange={(e) => setForm({...form, target: e.target.value})} placeholder="Rp 0" style={{ width: '100%', padding: '12px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
              </div>
-             <div className="flex gap-3 pt-2">
-               <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium">Batal</button>
-               <button type="submit" className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-md">Simpan</button>
+             <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+               <button type="button" onClick={() => setShowForm(false)} style={{ flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '14px', fontWeight: 'bold', cursor: 'pointer' }}>Batal</button>
+               <button type="submit" style={{ flex: 1, padding: '14px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', cursor: 'pointer' }}>Simpan</button>
              </div>
            </form>
         ) : (
-          <div className="space-y-4">
-            {savings.map(s => {
-              const progress = Math.min((s.current / s.target) * 100, 100).toFixed(1);
-              return (
-                <div key={s.id} className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-3">
-                  <div onClick={() => setDetailSaving(s)} className="cursor-pointer">
-                    <div className="flex justify-between items-end mb-1">
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-800">{s.name}</h3>
-                        <p className="text-xs font-medium text-gray-500 mt-0.5">{formatRupiah(s.current)} <span className="text-gray-400 font-normal">dari</span> {formatRupiah(s.target)}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {savings.length === 0 ? (
+              <div style={{ textAlign: 'center', backgroundColor: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Belum ada target tabungan.</p>
+              </div>
+            ) : (
+              savings.map(s => {
+                const progress = Math.min((s.current / s.target) * 100, 100).toFixed(1);
+                return (
+                  <div key={s.id} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '24px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div onClick={() => setDetailSaving(s)} style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1e293b', margin: '0 0 4px 0' }}>{s.name}</h3>
+                          <p style={{ fontSize: '12px', fontWeight: 500, color: '#64748b', margin: 0 }}>
+                            {formatRupiah(s.current)} <span style={{ color: '#94a3b8', fontWeight: 'normal' }}>/ {formatRupiah(s.target)}</span>
+                          </p>
+                        </div>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', backgroundColor: '#eff6ff', color: '#2563eb', padding: '4px 10px', borderRadius: '10px' }}>{progress}%</span>
                       </div>
-                      <span className="text-sm font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-lg">{progress}%</span>
+                      <div style={{ width: '100%', backgroundColor: '#f1f5f9', borderRadius: '99px', height: '10px', overflow: 'hidden' }}>
+                        <div style={{ backgroundColor: '#2563eb', height: '100%', width: `${progress}%`, borderRadius: '99px' }}></div>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#2563eb', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        Ketuk untuk riwayat setoran <ChevronRight size={14} />
+                      </p>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden my-3">
-                      <div className="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
-                    </div>
-                    <p className="text-[11px] text-indigo-600 font-semibold underline">Ketuk untuk lihat riwayat setoran</p>
+
+                    <button onClick={() => setAddModal(s.id)} style={{ width: '100%', padding: '12px', backgroundColor: '#eff6ff', color: '#2563eb', border: 'none', borderRadius: '14px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Plus size={16} /> Setor Tabungan
+                    </button>
                   </div>
-                  <button onClick={() => setAddModal(s.id)} className="w-full py-3 bg-indigo-50 text-indigo-700 font-bold rounded-xl text-sm hover:bg-indigo-100 transition-all flex items-center justify-center gap-2">
-                    <IconPlus /> Setor Tabungan
-                  </button>
-                </div>
-              )
-            })}
+                )
+              })
+            )}
             
-            <button onClick={() => setShowForm(true)} className="w-full py-4 border-2 border-dashed border-indigo-300 text-indigo-600 font-bold rounded-3xl flex items-center justify-center gap-2 hover:bg-indigo-50 transition-all">
-              <IconPlus /> Buat Target Baru
+            <button onClick={() => setShowForm(true)} style={{ width: '100%', padding: '16px', border: '2px dashed #93c5fd', color: '#2563eb', fontWeight: 'bold', borderRadius: '24px', backgroundColor: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <Plus size={18} /> Buat Target Baru
             </button>
           </div>
         )}
 
         {addModal && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setAddModal(null)}>
-             <div className="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl mb-16" onClick={e => e.stopPropagation()}>
-                <h3 className="font-bold text-xl mb-1 text-gray-800">Setor Tabungan</h3>
-                <p className="text-sm text-gray-500 mb-4">Masukkan nominal uang yang disisihkan.</p>
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setAddModal(null)}>
+             <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '28px', width: '100%', maxWidth: '340px', position: 'relative' }} onClick={e => e.stopPropagation()}>
+                <button onClick={() => setAddModal(null)} style={{ position: 'absolute', top: '16px', right: '16px', padding: '8px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '50%', cursor: 'pointer', color: '#64748b' }}><X size={18}/></button>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e293b', margin: '0 0 4px 0' }}>Setor Tabungan</h3>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 16px 0' }}>Masukkan nominal uang yang disisihkan.</p>
                 <form onSubmit={handleAddAmount}>
-                  <input type="number" inputMode="numeric" required value={addAmount} onChange={(e) => setAddAmount(e.target.value)} placeholder="Nominal Rp" className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-5 outline-none text-lg font-bold" />
-                  <div className="flex gap-3">
-                    <button type="button" onClick={() => setAddModal(null)} className="flex-1 py-3.5 bg-gray-100 text-gray-700 rounded-xl font-medium">Batal</button>
-                    <button type="submit" className="flex-1 py-3.5 bg-indigo-600 text-white rounded-xl font-bold shadow-md">Simpan</button>
+                  <input type="number" required value={addAmount} onChange={(e) => setAddAmount(e.target.value)} placeholder="0" style={{ width: '100%', padding: '14px 16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', fontSize: '16px', fontWeight: 'bold', outline: 'none', marginBottom: '20px', boxSizing: 'border-box' }} />
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button type="button" onClick={() => setAddModal(null)} style={{ flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '14px', fontWeight: 'bold', cursor: 'pointer' }}>Batal</button>
+                    <button type="submit" style={{ flex: 1, padding: '14px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', cursor: 'pointer' }}>Simpan</button>
                   </div>
                 </form>
              </div>
@@ -526,29 +575,29 @@ export default function App() {
         )}
 
         {detailSaving && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setDetailSaving(null)}>
-             <div className="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl mb-16 max-h-[75vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center border-b pb-3 mb-3">
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setDetailSaving(null)}>
+             <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '28px', width: '100%', maxWidth: '340px', maxHeight: '75vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '12px' }}>
                   <div>
-                    <h3 className="font-bold text-lg text-gray-800">{detailSaving.name}</h3>
-                    <p className="text-xs text-gray-500">Terkumpul: {formatRupiah(detailSaving.current)}</p>
+                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1e293b', margin: '0 0 2px 0' }}>{detailSaving.name}</h3>
+                    <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Terkumpul: {formatRupiah(detailSaving.current)}</p>
                   </div>
-                  <button onClick={() => setDetailSaving(null)} className="text-gray-400 hover:text-gray-700"><IconClose /></button>
+                  <button onClick={() => setDetailSaving(null)} style={{ padding: '6px', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '50%', cursor: 'pointer', color: '#64748b' }}><X size={18}/></button>
                 </div>
-                <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Riwayat Setoran</p>
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <p style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', margin: '0 0 4px 0' }}>Riwayat Setoran</p>
                   {(!detailSaving.history || detailSaving.history.length === 0) ? (
-                    <p className="text-sm text-gray-400 text-center py-6 bg-gray-50 rounded-2xl">Belum ada riwayat setoran.</p>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', textAlign: 'center', padding: '24px', backgroundColor: '#f8fafc', borderRadius: '16px', margin: 0 }}>Belum ada riwayat setoran.</p>
                   ) : (
                     detailSaving.history.map((h, i) => (
-                      <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100 text-sm">
-                        <span className="text-gray-600 text-xs">{new Date(h.date).toLocaleString('id-ID')}</span>
-                        <span className="font-bold text-green-600">+{formatRupiah(h.amount)}</span>
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', backgroundColor: '#f8fafc', borderRadius: '14px', border: '1px solid #f1f5f9', fontSize: '13px' }}>
+                        <span style={{ color: '#64748b', fontSize: '11px' }}>{new Date(h.date).toLocaleString('id-ID')}</span>
+                        <span style={{ fontWeight: 'bold', color: '#16a34a' }}>+{formatRupiah(h.amount)}</span>
                       </div>
                     ))
                   )}
                 </div>
-                <button onClick={() => setDetailSaving(null)} className="w-full mt-4 py-3 bg-gray-900 text-white font-bold rounded-xl text-sm">Tutup</button>
+                <button onClick={() => setDetailSaving(null)} style={{ width: '100%', marginTop: '16px', padding: '12px', backgroundColor: '#1e293b', color: 'white', border: 'none', borderRadius: '14px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>Tutup</button>
              </div>
           </div>
         )}
@@ -557,84 +606,44 @@ export default function App() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto h-screen bg-slate-50 flex flex-col font-sans shadow-2xl relative overflow-hidden sm:border-x border-gray-200 text-gray-800">
+    <div style={{ width: '100%', maxWidth: '420px', margin: '0 auto', height: '100vh', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, -apple-system, sans-serif', position: 'relative', overflow: 'hidden', color: '#1e293b' }}>
       
       {notification && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-full shadow-xl text-sm font-medium z-[200] animate-fade-in">
-          {notification}
+        <div style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: notification.type === 'salary' ? '#2563eb' : notification.type === 'in' ? '#16a34a' : notification.type === 'out' ? '#dc2626' : '#1e293b', color: 'white', padding: '10px 20px', borderRadius: '99px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.2)', fontSize: '13px', fontWeight: 'bold', zIndex: 9999, whiteSpace: 'nowrap' }}>
+          {notification.msg}
         </div>
       )}
 
-      {showSettings && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white w-full max-w-sm rounded-3xl p-6 relative shadow-2xl">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Pengaturan Profil</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Nama Tampilan</label>
-                <input type="text" inputMode="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Foto Profil (Galeri)</label>
-                <input type="file" accept="image/*" onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => setEditPhoto(reader.result);
-                    reader.readAsDataURL(file);
-                  }
-                }} className="w-full p-2 border border-gray-200 bg-gray-50 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-100 file:text-indigo-700 cursor-pointer" />
-                {editPhoto && <div className="mt-3 flex justify-center"><img src={editPhoto} alt="preview" className="w-20 h-20 object-cover rounded-full border-2 border-indigo-100 shadow" /></div>}
-              </div>
-              <div className="flex gap-3 pt-3">
-                <button onClick={() => setShowSettings(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium">Batal</button>
-                <button onClick={saveProfile} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-md">Simpan</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div style={{ flex: 1, overflowY: 'auto' }}>
         {activeTab === 'home' && <HomeView />}
         {activeTab === 'salary' && <SalaryView />}
-        {activeTab === 'tracker' && <TrackerView />}
+        {activeTab === 'tracker' && <FinanceView />}
         {activeTab === 'savings' && <SavingsView />}
       </div>
 
-      <div className="bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center absolute bottom-0 w-full rounded-t-3xl shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.05)] pb-5 sm:pb-3 z-20">
-        <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center gap-1 transition-all p-2 rounded-2xl ${activeTab === 'home' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400'}`}>
-          <IconHome />
-          <span className="text-[10px] font-bold">Beranda</span>
+      <div style={{ backgroundColor: 'white', padding: '10px 20px 20px 20px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', position: 'absolute', bottom: 0, width: '100%', borderTop: '1px solid #f1f5f9', boxSizing: 'border-box', zIndex: 100 }}>
+        
+        <button onClick={() => setActiveTab('home')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: activeTab === 'home' ? '#2563eb' : 'transparent', color: activeTab === 'home' ? 'white' : '#94a3b8', border: 'none', padding: '8px 16px', borderRadius: '16px', cursor: 'pointer' }}>
+          <Home size={20} />
+          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Beranda</span>
         </button>
-        <button onClick={() => setActiveTab('salary')} className={`flex flex-col items-center gap-1 transition-all p-2 rounded-2xl ${activeTab === 'salary' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400'}`}>
-          <IconCalculator />
-          <span className="text-[10px] font-bold">Gaji</span>
+        
+        <button onClick={() => setActiveTab('salary')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: activeTab === 'salary' ? '#2563eb' : 'transparent', color: activeTab === 'salary' ? 'white' : '#94a3b8', border: 'none', padding: '8px 16px', borderRadius: '16px', cursor: 'pointer' }}>
+          <Calculator size={20} />
+          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Gaji</span>
         </button>
-        <button onClick={() => setActiveTab('tracker')} className={`flex flex-col items-center gap-1 transition-all p-2 rounded-2xl ${activeTab === 'tracker' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400'}`}>
-          <IconWallet />
-          <span className="text-[10px] font-bold">Keuangan</span>
+        
+        <button onClick={() => setActiveTab('tracker')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: activeTab === 'tracker' ? '#2563eb' : 'transparent', color: activeTab === 'tracker' ? 'white' : '#94a3b8', border: 'none', padding: '8px 16px', borderRadius: '16px', cursor: 'pointer' }}>
+          <Wallet size={20} />
+          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Keuangan</span>
         </button>
-        <button onClick={() => setActiveTab('savings')} className={`flex flex-col items-center gap-1 transition-all p-2 rounded-2xl ${activeTab === 'savings' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400'}`}>
-          <IconPiggyBank />
-          <span className="text-[10px] font-bold">Tabungan</span>
+        
+        <button onClick={() => setActiveTab('savings')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: activeTab === 'savings' ? '#2563eb' : 'transparent', color: activeTab === 'savings' ? 'white' : '#94a3b8', border: 'none', padding: '8px 16px', borderRadius: '16px', cursor: 'pointer' }}>
+          <PiggyBank size={20} />
+          <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Tabungan</span>
         </button>
-      </div>
 
-      <style>{`
-        .animate-fade-in { animation: fadeIn 0.25s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
-        .custom-scrollbar::-webkit-scrollbar { width: 0px; background: transparent; }
-        .print-only { display: none; }
-        @media print {
-          body * { visibility: hidden; }
-          .print-container, .print-container * { visibility: visible; }
-          .print-container { position: absolute; left: 0; top: 0; width: 100%; padding: 0; background: white; z-index: 9999; }
-          .hide-on-print { display: none !important; }
-          .print-only { display: block; margin-top: 20px;}
-          .print-border { border: 1px solid #e5e7eb !important; margin-bottom: 12px; page-break-inside: avoid; border-radius: 8px; }
-        }
-      `}</style>
+      </div>
     </div>
   );
 }
